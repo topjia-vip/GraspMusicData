@@ -1,4 +1,4 @@
-package com.topjia.getqqyydata.bean;
+package com.topjia.getqqyydata.entity;
 
 import lombok.Data;
 

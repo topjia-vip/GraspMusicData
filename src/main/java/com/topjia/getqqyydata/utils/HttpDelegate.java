@@ -1,14 +1,13 @@
-package com.topjia.getqqyydata.httpUtiles;
+package com.topjia.getqqyydata.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.topjia.getqqyydata.bean.RequestHeader;
+import com.topjia.getqqyydata.entity.RequestHeader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.*;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
