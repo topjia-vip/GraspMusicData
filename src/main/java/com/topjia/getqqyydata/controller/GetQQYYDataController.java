@@ -26,17 +26,20 @@ public class GetQQYYDataController {
      * @return 返回结果为json数据
      */
     @PostMapping(value = "/getRecommend")
-    public Object getRecommend(String platform, String uin, String needNewCode) throws Exception {
-        String url = "https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg";
+    public Object getRecommend(@RequestBody String data) throws Exception {
+        String url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
+        JSONObject parse = JSONObject.parseObject(data);
         Object[] params = new Object[]{
                 BaseParamsAndValues.G_TK,
                 BaseParamsAndValues.IN_CHAR_SET,
                 BaseParamsAndValues.OUT_CHAR_SET,
                 BaseParamsAndValues.FORMAT,
                 BaseParamsAndValues.NOTICE,
+                "loginUin",
+                "hostUin",
                 "platform",
-                "uin",
                 "needNewCode",
+                "data"
         };
         Object[] values = new Object[]{
                 BaseParamsAndValues.G_TK_VALUE,
@@ -44,9 +47,11 @@ public class GetQQYYDataController {
                 BaseParamsAndValues.OUT_CHAR_SET_VALUE,
                 BaseParamsAndValues.FORMAT_VALUE,
                 BaseParamsAndValues.NOTICE_VALUE,
-                platform,
-                uin,
-                needNewCode,
+                parse.get("loginUin"),
+                parse.get("hostUin"),
+                parse.get("platform"),
+                parse.get("needNewCode"),
+                parse.get("data"),
         };
         List<NameValuePair> paramsList = HttpDelegate.getParams(params, values);
         return HttpDelegate.sendGet(url, paramsList, null);
