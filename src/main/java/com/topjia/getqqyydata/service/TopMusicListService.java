@@ -9,5 +9,5 @@ import java.util.List;
  * @date 2019-11-30 22:11
  */
 public interface TopMusicListService {
-    List<Song> getTopMusicList(String topid) throws Exception;
+    List<Object> getTopMusicList(String topid) throws Exception;
 }

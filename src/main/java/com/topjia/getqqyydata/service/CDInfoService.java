@@ -9,5 +9,5 @@ import java.util.List;
  * @date 2019-11-30 21:24
  */
 public interface CDInfoService {
-    List<Song> getCDInfo(String disstid) throws Exception;
+    List<Object> getCDInfo(String disstid) throws Exception;
 }

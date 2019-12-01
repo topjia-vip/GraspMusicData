@@ -9,5 +9,5 @@ import java.util.List;
  * @date 2019-11-30 20:26
  */
 public interface SingerDetailService {
-    List<Song> getSingerDetail(String singermid) throws Exception;
+    List<Object> getSingerDetail(String singermid) throws Exception;
 }

@@ -31,7 +31,7 @@ public class SearchController {
         Map<String, Object> result = new HashMap<>();
         HashMap<String, Object> searchRes = searchService.search(w, p, perpage, n, catZhida);
         List<Song> songs = (List<Song>) searchRes.get("songs");
-        songs = songPurlService.getSongPurl(songs);
+        songs = songPurlService.getSongPurl(songs, "");
         ArrayList<Object> objects = new ArrayList<>();
         objects.add(searchRes.get("searchResult"));
         objects.add(songs);

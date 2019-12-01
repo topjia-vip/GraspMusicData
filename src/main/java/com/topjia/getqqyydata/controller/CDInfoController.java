@@ -31,10 +31,16 @@ public class CDInfoController {
     @PostMapping(value = "/getCDInfo")
     public Object getCDInfo(String disstid) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        List<Song> songs = cdInfoService.getCDInfo(disstid);
-        songs = songPurlService.getSongPurl(songs);
-        result.put("code", 0);
-        result.put("data", songs);
-        return result;
+        List<Object> list = cdInfoService.getCDInfo(disstid);
+        if ((boolean) list.get(1)) {
+            result.put("code", 0);
+            result.put("data", list.get(0));
+            return result;
+        } else {
+            List<Song> songs = songPurlService.getSongPurl((List<Song>) list.get(0), disstid);
+            result.put("code", 0);
+            result.put("data", songs);
+            return result;
+        }
     }
 }

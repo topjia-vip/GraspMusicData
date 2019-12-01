@@ -8,7 +8,10 @@ import com.topjia.getqqyydata.entity.Song;
 import com.topjia.getqqyydata.service.CDInfoService;
 import com.topjia.getqqyydata.utils.HttpDelegate;
 import com.topjia.getqqyydata.utils.SingerFilterUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,11 +21,30 @@ import java.util.List;
  * @author wjh
  * @date 2019-11-30 21:25
  */
+@Slf4j
 @Service
 public class CDInfoServiceImpl implements CDInfoService {
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Override
-    public List<Song> getCDInfo(String disstid) throws Exception {
+    public List<Object> getCDInfo(String disstid) throws Exception {
+        List<Object> flagList = new ArrayList<>();
+        List<Song> songList = (List<Song>) redisTemplate.opsForValue().get(disstid + "_Songs");
+        if (songList != null) {
+            log.info("命中redis缓存,{}", songList);
+            flagList.add(songList);
+            flagList.add(true);
+            return flagList;
+        } else {
+            songList = getSongs(disstid);
+            flagList.add(songList);
+            flagList.add(false);
+            return flagList;
+        }
+    }
+
+    private ArrayList<Song> getSongs(String disstid) throws Exception {
         String url = "https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg";
         RequestHeader header = new RequestHeader("c.y.qq.com", "https://c.y.qq.com/");
         Object[] params = new Object[]{

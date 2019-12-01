@@ -2,16 +2,20 @@ package com.topjia.getqqyydata.service.impl;
 
 import com.alibaba.fastjson.*;
 import com.topjia.getqqyydata.base.BaseParamsAndValues;
+import com.topjia.getqqyydata.base.RedisExpirationDate;
 import com.topjia.getqqyydata.entity.RequestHeader;
 import com.topjia.getqqyydata.entity.Song;
 import com.topjia.getqqyydata.service.SongPurlService;
 import com.topjia.getqqyydata.utils.*;
 import org.apache.http.NameValuePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wjh
@@ -19,8 +23,28 @@ import java.util.List;
  */
 @Service
 public class SongPurlServiceImpl implements SongPurlService {
+    @Autowired
+    RedisTemplate redisTemplate;
+
     @Override
-    public List<Song> getSongPurl(List<Song> songs) throws Exception {
+    public List<Song> getSongPurl(List<Song> songs, String id) throws Exception {
+        if (StringUtils.isEmpty(id)) {
+            // 搜索不缓存数据
+            return getSongs(songs);
+        } else {
+            List<Song> songList = (List<Song>) redisTemplate.opsForValue().get(id + "_Songs");
+            if (songList != null) {
+                return songList;
+            } else {
+                songList = getSongs(songs);
+                redisTemplate.opsForValue().set(id + "_Songs", songList, RedisExpirationDate.SONG_TIME, TimeUnit.MINUTES);
+            }
+            return songList;
+        }
+    }
+
+    private List<Song> getSongs(List<Song> songs) throws Exception {
+        List<Song> songList;
         String songmids = SongMidUtil.getSongMids(songs);
         String url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
         String data = "{'req_0':{'module':'vkey.GetVkeyServer','method':'CgiGetVkey','param':{'guid':'7275231575','songmid':" + songmids + ",'songtype':[0],'uin':'0','platform':'20'}}}";
@@ -53,7 +77,7 @@ public class SongPurlServiceImpl implements SongPurlService {
         List<NameValuePair> paramsList = HttpDelegate.getParams(params, values);
         JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, header);
         JSONArray jsonArray = getRes.getJSONObject("req_0").getJSONObject("data").getJSONArray("midurlinfo");
-        ArrayList<Song> newSongs = new ArrayList<>();
+        songList = new ArrayList<>();
         // 再次封装音乐，过滤掉不可播放的音乐
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject obj = (JSONObject) jsonArray.get(i);
@@ -61,9 +85,9 @@ public class SongPurlServiceImpl implements SongPurlService {
             if (!StringUtils.isEmpty(purl)) {
                 Song song = songs.get(i);
                 song.setUrl(BasePurl.BASE_PURL + purl);
-                newSongs.add(song);
+                songList.add(song);
             }
         }
-        return newSongs;
+        return songList;
     }
 }

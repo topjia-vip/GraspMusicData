@@ -9,5 +9,5 @@ import java.util.List;
  * @date 2019-11-30 20:07
  */
 public interface SongPurlService {
-    List<Song> getSongPurl(List<Song> songs) throws Exception;
+    List<Song> getSongPurl(List<Song> songs, String id) throws Exception;
 }

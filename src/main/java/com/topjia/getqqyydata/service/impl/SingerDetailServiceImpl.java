@@ -7,7 +7,10 @@ import com.topjia.getqqyydata.entity.Song;
 import com.topjia.getqqyydata.service.SingerDetailService;
 import com.topjia.getqqyydata.utils.HttpDelegate;
 import com.topjia.getqqyydata.utils.SingerFilterUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -18,11 +21,30 @@ import java.util.List;
  * @author wjh
  * @date 2019-11-30 20:26
  */
+@Slf4j
 @Service
 public class SingerDetailServiceImpl implements SingerDetailService {
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Override
-    public List<Song> getSingerDetail(String singermid) throws Exception {
+    public List<Object> getSingerDetail(String singermid) throws Exception {
+        List<Object> flagList = new ArrayList<>();
+        List<Song> songList = (List<Song>) redisTemplate.opsForValue().get(singermid + "_Songs");
+        if (songList != null) {
+            log.info("命中redis缓存,{}", songList);
+            flagList.add(songList);
+            flagList.add(true);
+            return flagList;
+        } else {
+            ArrayList<Song> songs = getSongs(singermid);
+            flagList.add(songs);
+            flagList.add(false);
+            return flagList;
+        }
+    }
+
+    private ArrayList<Song> getSongs(String singermid) throws Exception {
         String url = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg";
         Object[] params = new Object[]{
                 BaseParamsAndValues.G_TK,

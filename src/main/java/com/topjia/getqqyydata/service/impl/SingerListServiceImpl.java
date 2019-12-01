@@ -2,25 +2,46 @@ package com.topjia.getqqyydata.service.impl;
 
 import com.alibaba.fastjson.*;
 import com.topjia.getqqyydata.base.BaseParamsAndValues;
+import com.topjia.getqqyydata.base.RedisExpirationDate;
 import com.topjia.getqqyydata.entity.Singer;
 import com.topjia.getqqyydata.service.SingerListService;
 import com.topjia.getqqyydata.utils.ChineseCharacterUtil;
 import com.topjia.getqqyydata.utils.HttpDelegate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wjh
  * @date 2019-11-30 19:54
  */
+@Slf4j
 @Service
 public class SingerListServiceImpl implements SingerListService {
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Override
     public List<Singer> getSingerList() throws Exception {
+        List<Singer> singerList = (List<Singer>) redisTemplate.opsForValue().get("SingerList");
+        if (singerList != null) {
+            log.info("命中redis缓存,{}", singerList);
+            return singerList;
+        } else {
+            singerList = getSingers();
+            redisTemplate.opsForValue().set("SingerList", singerList, RedisExpirationDate.SINGER_LIST_TIME, TimeUnit.HOURS);
+        }
+        return singerList;
+    }
+
+    private List<Singer> getSingers() throws Exception {
+        List<Singer> singerList;
         String url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
         String data = "{\"singerList\":{\"module\":\"Music.SingerListServer\",\"method\":\"get_singer_list\",\"param\":{\"area\":-100,\"sex\":-100,\"genre\":-100,\"index\":-100,\"sin\":0,\"cur_page\":1}}}";
         JSONObject object = JSONObject.parseObject(data);
@@ -52,7 +73,7 @@ public class SingerListServiceImpl implements SingerListService {
         JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, null);
         System.out.println(getRes);
         JSONArray jsonArray = getRes.getJSONObject("singerList").getJSONObject("data").getJSONArray("singerlist");
-        ArrayList<Singer> res = new ArrayList<>();
+        singerList = new ArrayList<>();
         for (Object o : jsonArray) {
             JSONObject obj = (JSONObject) o;
             Singer singer = new Singer();
@@ -63,8 +84,8 @@ public class SingerListServiceImpl implements SingerListService {
             String firstName = singer_name.substring(0, 1);
             String index = ChineseCharacterUtil.getUpperCase(firstName, false);
             singer.setIndex(index);
-            res.add(singer);
+            singerList.add(singer);
         }
-        return res;
+        return singerList;
     }
 }

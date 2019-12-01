@@ -29,10 +29,16 @@ public class SingerDetailController {
     @PostMapping("/getSingerDetail")
     public Object getSingerDetail(String singermid) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        List<Song> songs = singerDetailService.getSingerDetail(singermid);
-        songs = songPurlService.getSongPurl(songs);
-        result.put("code", 0);
-        result.put("data", songs);
-        return result;
+        List<Object> list = singerDetailService.getSingerDetail(singermid);
+        if ((boolean) list.get(1)) {
+            result.put("code", 0);
+            result.put("data", list.get(0));
+            return result;
+        } else {
+            List<Song> songs = songPurlService.getSongPurl((List<Song>) list.get(0), singermid);
+            result.put("code", 0);
+            result.put("data", songs);
+            return result;
+        }
     }
 }

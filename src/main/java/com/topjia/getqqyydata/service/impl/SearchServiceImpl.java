@@ -66,7 +66,7 @@ public class SearchServiceImpl implements SearchService {
                 "yqq.json",
         };
         List<NameValuePair> paramsList = HttpDelegate.getParams(params, values);
-        JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, null);
+        JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, header);
         JSONObject songinfo = getRes.getJSONObject("data").getJSONObject("song");
         JSONObject zhida = getRes.getJSONObject("data").getJSONObject("zhida");
         ArrayList<Object> list = new ArrayList<>();
