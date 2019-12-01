@@ -9,5 +9,5 @@ import java.util.List;
  * @date 2019-11-30 19:39
  */
 public interface DiscListService {
-    List<DiscList> getDiscList() throws Exception;
+    List<DiscList> getDiscList(String sortId) throws Exception;
 }

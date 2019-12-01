@@ -25,9 +25,9 @@ public class DiscListController {
      * @return 返回结果为json数据
      */
     @PostMapping(value = "/getDiscList")
-    public Object getDiscList() throws Exception {
+    public Object getDiscList(String sortId) throws Exception {
         HashMap<String, Object> result = new HashMap<>();
-        List<DiscList> discLists = discListService.getDiscList();
+        List<DiscList> discLists = discListService.getDiscList(sortId);
         result.put("code", 0);
         result.put("list", discLists);
         return result;

@@ -29,19 +29,19 @@ public class DiscListServiceImpl implements DiscListService {
     RedisTemplate redisTemplate;
 
     @Override
-    public List<DiscList> getDiscList() throws Exception {
-        List<DiscList> list = (List<DiscList>) redisTemplate.opsForValue().get("DiscList");
+    public List<DiscList> getDiscList(String sortId) throws Exception {
+        List<DiscList> list = (List<DiscList>) redisTemplate.opsForValue().get(sortId + "_DiscList");
         if (list != null) {
             log.info("命中Redis缓存,{}", list);
             return list;
         } else {
-            list = getDiscLists();
-            redisTemplate.opsForValue().set("DiscList", list, RedisExpirationDate.DISC_LIST_TIME, TimeUnit.HOURS);
+            list = getDiscLists(sortId);
+            redisTemplate.opsForValue().set(sortId + "_DiscList", list, RedisExpirationDate.DISC_LIST_TIME, TimeUnit.HOURS);
             return list;
         }
     }
 
-    private List<DiscList> getDiscLists() throws Exception {
+    private List<DiscList> getDiscLists(String sortId) throws Exception {
         List<DiscList> list;
         String url = "https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg";
         RequestHeader header = new RequestHeader("c.y.qq.com", "https://c.y.qq.com/");
@@ -70,7 +70,7 @@ public class DiscListServiceImpl implements DiscListService {
                 "0",
                 "0",
                 "29",
-                "5",
+                sortId,
                 "0",
                 "10000000",
                 Math.random(),
