@@ -27,9 +27,9 @@ public class SearchController {
      * @return 返回结果为json数据
      */
     @PostMapping("/search")
-    public Object search(String w, String p, String perpage, String n, String catZhida) throws Exception {
+    public Object search(String w, String p, String n, String catZhida) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        HashMap<String, Object> searchRes = searchService.search(w, p, perpage, n, catZhida);
+        HashMap<String, Object> searchRes = searchService.search(w, p, n, catZhida);
         List<Song> songs = (List<Song>) searchRes.get("songs");
         songs = songPurlService.getSongPurl(songs, "");
         ArrayList<Object> objects = new ArrayList<>();

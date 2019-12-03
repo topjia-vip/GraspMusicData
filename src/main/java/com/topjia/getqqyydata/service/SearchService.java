@@ -7,5 +7,5 @@ import java.util.HashMap;
  * @date 2019-11-30 22:24
  */
 public interface SearchService {
-    HashMap<String, Object> search(String w, String p, String perpage, String n, String catZhida) throws Exception;
+    HashMap<String, Object> search(String w, String p, String n, String catZhida) throws Exception;
 }

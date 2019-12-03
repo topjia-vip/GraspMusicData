@@ -20,7 +20,7 @@ import java.util.*;
 @Service
 public class SearchServiceImpl implements SearchService {
     @Override
-    public HashMap<String, Object> search(String w, String p, String perpage, String n, String catZhida) throws Exception {
+    public HashMap<String, Object> search(String w, String p, String n, String catZhida) throws Exception {
         String url = "https://c.y.qq.com/soso/fcgi-bin/client_search_cp";
         RequestHeader header = new RequestHeader("c.y.qq.com", "https://y.qq.com/portal/search.html");
         Object[] params = new Object[]{
@@ -31,7 +31,6 @@ public class SearchServiceImpl implements SearchService {
                 BaseParamsAndValues.NOTICE,
                 "w",
                 "p",
-                "perpage",
                 "n",
                 "catZhida",
                 "zhidaqu",
@@ -52,7 +51,6 @@ public class SearchServiceImpl implements SearchService {
                 BaseParamsAndValues.NOTICE_VALUE,
                 w,
                 p,
-                perpage,
                 n,
                 catZhida,
                 "1",
@@ -76,7 +74,7 @@ public class SearchServiceImpl implements SearchService {
         list.add(searchResult);
         JSONArray songs = songinfo.getJSONArray("list");
         ArrayList<Song> newSongs = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < Integer.parseInt(n); i++) {
             JSONObject obj = (JSONObject) songs.get(i);
             Song song = new Song();
             song.setId(obj.getString("songid"));
