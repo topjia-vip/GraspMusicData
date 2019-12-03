@@ -47,7 +47,7 @@ public class SongPurlServiceImpl implements SongPurlService {
         List<Song> songList;
         String songmids = SongMidUtil.getSongMids(songs);
         String url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
-        String data = "{'req_0':{'module':'vkey.GetVkeyServer','method':'CgiGetVkey','param':{'guid':'7275231575','songmid':" + songmids + ",'songtype':[0],'uin':'0','platform':'20'}}}";
+        String data = "{\"req\":{\"module\":\"CDN.SrfCdnDispatchServer\",\"method\":\"GetCdnDispatch\",\"param\":{\"guid\":\"7275231575\",\"calltype\":0,\"userip\":\"\"}},\"req_0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"7275231575\",\"songmid\":" + songmids + ",\"songtype\":[0],\"uin\":\"1256957450\",\"loginflag\":1,\"platform\":\"20\"}}}";
         JSONObject parse = JSONObject.parseObject(data);
         RequestHeader header = new RequestHeader("u.y.qq.com", "https://u.y.qq.com/");
         Object[] params = new Object[]{
@@ -76,6 +76,16 @@ public class SongPurlServiceImpl implements SongPurlService {
         };
         List<NameValuePair> paramsList = HttpDelegate.getParams(params, values);
         JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, header);
+        // 获取qq音乐服务器cdn
+        JSONArray cdns = getRes.getJSONObject("req").getJSONObject("data").getJSONArray("sip");
+        ArrayList<String> _CDN = new ArrayList<>();
+        for (int i = 0; i < cdns.size(); i++) {
+            String cdn = (String) cdns.get(i);
+            if (cdn.contains("amobile")) {
+                _CDN.add(cdn);
+            }
+        }
+        int size = _CDN.size();
         JSONArray jsonArray = getRes.getJSONObject("req_0").getJSONObject("data").getJSONArray("midurlinfo");
         songList = new ArrayList<>();
         // 再次封装音乐，过滤掉不可播放的音乐
@@ -84,7 +94,7 @@ public class SongPurlServiceImpl implements SongPurlService {
             String purl = obj.getString("purl");
             if (!StringUtils.isEmpty(purl)) {
                 Song song = songs.get(i);
-                song.setUrl(BasePurl.BASE_PURL + purl);
+                song.setUrl(_CDN.get(i % size) + purl);
                 songList.add(song);
             }
         }
