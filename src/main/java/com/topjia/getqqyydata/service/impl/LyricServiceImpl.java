@@ -22,19 +22,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class LyricServiceImpl implements LyricService {
-    @Autowired
-    RedisTemplate redisTemplate;
 
     public Lyric getLyric(String songmid) throws Exception {
-        Lyric lyric = (Lyric) redisTemplate.opsForValue().get(songmid + "_lyric");
-        if (lyric != null) {
-            log.info("命中redis缓存,{}", lyric);
-            return lyric;
-        } else {
-            lyric = getSongLyric(songmid);
-            redisTemplate.opsForValue().set(songmid + "_lyric", lyric);
-            return lyric;
-        }
+        Lyric lyric = getSongLyric(songmid);
+        return lyric;
     }
 
     private Lyric getSongLyric(String songmid) throws Exception {

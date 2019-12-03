@@ -43,6 +43,61 @@ public class SongPurlServiceImpl implements SongPurlService {
         }
     }
 
+    @Override
+    public List<String> getSongPlayVkey(String songmids) throws Exception {
+        String url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
+        String data = "{\"req\":{\"module\":\"CDN.SrfCdnDispatchServer\",\"method\":\"GetCdnDispatch\",\"param\":{\"guid\":\"7275231575\",\"calltype\":0,\"userip\":\"\"}},\"req_0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"7275231575\",\"songmid\":" + songmids + ",\"songtype\":[0],\"uin\":\"1256957450\",\"loginflag\":1,\"platform\":\"20\"}}}";
+        JSONObject parse = JSONObject.parseObject(data);
+        RequestHeader header = new RequestHeader("u.y.qq.com", "https://u.y.qq.com/");
+        Object[] params = new Object[]{
+                BaseParamsAndValues.G_TK,
+                BaseParamsAndValues.IN_CHAR_SET,
+                BaseParamsAndValues.OUT_CHAR_SET,
+                BaseParamsAndValues.FORMAT,
+                BaseParamsAndValues.NOTICE,
+                "loginUin",
+                "hostUin",
+                "platform",
+                "needNewCode",
+                "data",
+        };
+        Object[] values = new Object[]{
+                BaseParamsAndValues.G_TK_VALUE,
+                BaseParamsAndValues.IN_CHAR_SET_VALUE,
+                BaseParamsAndValues.OUT_CHAR_SET_VALUE,
+                BaseParamsAndValues.FORMAT_VALUE,
+                BaseParamsAndValues.NOTICE_VALUE,
+                "0",
+                "0",
+                "yqq.json",
+                "0",
+                JSON.toJSON(parse),
+        };
+        List<NameValuePair> paramsList = HttpDelegate.getParams(params, values);
+        JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, header);
+        // 获取qq音乐服务器cdn
+        JSONArray cdns = getRes.getJSONObject("req").getJSONObject("data").getJSONArray("sip");
+        ArrayList<String> _CDN = new ArrayList<>();
+        for (int i = 0; i < cdns.size(); i++) {
+            String cdn = (String) cdns.get(i);
+            if (cdn.contains("amobile")) {
+                _CDN.add(cdn);
+            }
+        }
+        int size = _CDN.size();
+        JSONArray jsonArray = getRes.getJSONObject("req_0").getJSONObject("data").getJSONArray("midurlinfo");
+        List<String> playUrls = new ArrayList<>();
+        // 再次封装音乐，过滤掉不可播放的音乐
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject obj = (JSONObject) jsonArray.get(i);
+            String purl = obj.getString("purl");
+            if (!StringUtils.isEmpty(purl)) {
+                playUrls.add(_CDN.get(i % size) + purl);
+            }
+        }
+        return playUrls;
+    }
+
     private List<Song> getSongs(List<Song> songs) throws Exception {
         List<Song> songList;
         String songmids = SongMidUtil.getSongMids(songs);
@@ -94,7 +149,7 @@ public class SongPurlServiceImpl implements SongPurlService {
             String purl = obj.getString("purl");
             if (!StringUtils.isEmpty(purl)) {
                 Song song = songs.get(i);
-                song.setUrl(_CDN.get(i % size) + purl);
+                song.setUrl("http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/" + purl);
                 songList.add(song);
             }
         }

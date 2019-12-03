@@ -30,7 +30,6 @@ public class RecommendPicServiceImpl implements RecommendPicService {
     public List<RecommendPic> getRecommend() throws Exception {
         ArrayList<RecommendPic> pic = (ArrayList<RecommendPic>) redisTemplate.opsForValue().get("recommendPic");
         if (pic != null) {
-            log.info("命中redis缓存,{}", pic);
             return pic;
         } else {
             pic = getRecommendPics();

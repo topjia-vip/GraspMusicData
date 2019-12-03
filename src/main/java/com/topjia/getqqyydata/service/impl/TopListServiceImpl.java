@@ -29,7 +29,6 @@ public class TopListServiceImpl implements TopListService {
     public JSONArray getTopList() throws Exception {
         JSONArray top_song_list = (JSONArray) redisTemplate.opsForValue().get("Top_Song_List");
         if (top_song_list != null) {
-            log.info("命中redis缓存,{}", top_song_list);
             return top_song_list;
         } else {
             top_song_list = getObjects();

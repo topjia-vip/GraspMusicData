@@ -32,7 +32,6 @@ public class DiscListServiceImpl implements DiscListService {
     public List<DiscList> getDiscList(String sortId) throws Exception {
         List<DiscList> list = (List<DiscList>) redisTemplate.opsForValue().get(sortId + "_DiscList");
         if (list != null) {
-            log.info("命中Redis缓存,{}", list);
             return list;
         } else {
             list = getDiscLists(sortId);

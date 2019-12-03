@@ -31,7 +31,6 @@ public class HotKeyServiceImpl implements HotKeyService {
     public List<HotKey> getHotKey() throws Exception {
         List<HotKey> hotKeys = (List<HotKey>) redisTemplate.opsForValue().get("HotKeys");
         if (hotKeys != null) {
-            log.info("命中redis缓存,{}", hotKeys);
             return hotKeys;
         } else {
             hotKeys = getHotKeys();

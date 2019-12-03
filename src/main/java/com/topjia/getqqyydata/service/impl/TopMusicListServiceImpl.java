@@ -32,7 +32,6 @@ public class TopMusicListServiceImpl implements TopMusicListService {
         List<Object> flagList = new ArrayList<>();
         List<Song> songList = (List<Song>) redisTemplate.opsForValue().get(topid + "_Songs");
         if (songList != null) {
-            log.info("命中redis缓存,{}", songList);
             flagList.add(songList);
             flagList.add(true);
             return flagList;

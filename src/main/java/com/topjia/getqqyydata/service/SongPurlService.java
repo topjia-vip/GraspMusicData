@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface SongPurlService {
     List<Song> getSongPurl(List<Song> songs, String id) throws Exception;
+
+    List<String> getSongPlayVkey(String songmids) throws Exception;
 }

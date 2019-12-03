@@ -31,7 +31,6 @@ public class SingerListServiceImpl implements SingerListService {
     public List<Singer> getSingerList() throws Exception {
         List<Singer> singerList = (List<Singer>) redisTemplate.opsForValue().get("SingerList");
         if (singerList != null) {
-            log.info("命中redis缓存,{}", singerList);
             return singerList;
         } else {
             singerList = getSingers();
@@ -71,7 +70,6 @@ public class SingerListServiceImpl implements SingerListService {
         };
         List<NameValuePair> paramsList = HttpDelegate.getParams(params, values);
         JSONObject getRes = (JSONObject) HttpDelegate.sendGet(url, paramsList, null);
-        System.out.println(getRes);
         JSONArray jsonArray = getRes.getJSONObject("singerList").getJSONObject("data").getJSONArray("singerlist");
         singerList = new ArrayList<>();
         for (Object o : jsonArray) {
