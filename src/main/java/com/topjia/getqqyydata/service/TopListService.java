@@ -1,11 +1,13 @@
 package com.topjia.getqqyydata.service;
 
-import com.alibaba.fastjson.JSONArray;
+import com.topjia.getqqyydata.entity.TopGroup;
+
+import java.util.ArrayList;
 
 /**
  * @author wjh
  * @date 2019-11-30 21:59
  */
 public interface TopListService {
-    JSONArray getTopList() throws Exception;
+    ArrayList<TopGroup> getTopList() throws Exception;
 }

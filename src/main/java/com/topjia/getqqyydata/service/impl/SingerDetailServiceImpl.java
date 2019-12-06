@@ -91,7 +91,7 @@ public class SingerDetailServiceImpl implements SingerDetailService {
             String album = musicData.getString("albumname");
             if (!StringUtils.isEmpty(album)) {
                 song.setAlbum(album);
-                song.setImage("https://y.gtimg.cn/music/photo_new/T002R300x300M000" + musicData.getString("albummid") + ".jpg?max_age=2592000");
+                song.setImage("https://y.gtimg.cn/music/photo_new/T002R500x500M000" + musicData.getString("albummid") + ".jpg?max_age=2592000");
             }
             song.setDuration(musicData.getString("interval"));
             songs.add(song);
