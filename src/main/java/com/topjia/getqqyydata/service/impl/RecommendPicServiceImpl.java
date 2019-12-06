@@ -72,7 +72,7 @@ public class RecommendPicServiceImpl implements RecommendPicService {
         JSONArray jsonArray = object.getJSONObject("focus").getJSONObject("data").getJSONArray("content");
         // 处理结果
         pic = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject obj = (JSONObject) jsonArray.get(i);
             String jump_info = obj.getJSONObject("jump_info").getString("url");
             if (!jump_info.contains("https")) {
