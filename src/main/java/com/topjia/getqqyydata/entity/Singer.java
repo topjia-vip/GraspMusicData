@@ -10,7 +10,6 @@ import lombok.Data;
  */
 @Data
 public class Singer {
-    private String index;
     private String SingerMid;
     private String SingerName;
 }

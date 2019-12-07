@@ -5,7 +5,6 @@ import com.topjia.getqqyydata.base.BaseParamsAndValues;
 import com.topjia.getqqyydata.base.RedisExpirationDate;
 import com.topjia.getqqyydata.entity.Singer;
 import com.topjia.getqqyydata.service.SingerListService;
-import com.topjia.getqqyydata.utils.ChineseCharacterUtil;
 import com.topjia.getqqyydata.utils.HttpDelegate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
@@ -76,12 +75,7 @@ public class SingerListServiceImpl implements SingerListService {
             JSONObject obj = (JSONObject) o;
             Singer singer = new Singer();
             singer.setSingerMid(obj.getString("singer_mid"));
-            String singer_name = obj.getString("singer_name");
-            // 获取姓的首字母
-            singer.setSingerName(singer_name);
-            String firstName = singer_name.substring(0, 1);
-            String index = ChineseCharacterUtil.getUpperCase(firstName, false);
-            singer.setIndex(index);
+            singer.setSingerName(obj.getString("singer_name"));
             singerList.add(singer);
         }
         return singerList;
